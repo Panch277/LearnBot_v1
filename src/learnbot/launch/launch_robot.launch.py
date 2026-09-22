@@ -58,8 +58,12 @@ def generate_launch_description():
     
 
 
+    # Process the xacro directly instead of querying it back from robot_state_publisher
+    # via `ros2 param get` -- that round-trip raced against rsp's node registration on
+    # the ROS graph and made this launch fail intermittently (see git history).
+    xacro_file = os.path.join(get_package_share_directory(package_name), 'description', 'robot.urdf.xacro')
     robot_description = ParameterValue(
-        Command(['ros2 param get --hide-type /robot_state_publisher robot_description']),
+        Command(['xacro ', xacro_file, ' use_ros2_control:=true', ' sim_mode:=false']),
         value_type=str
     )
 

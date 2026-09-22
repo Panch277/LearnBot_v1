@@ -48,11 +48,10 @@
     </visual>
     <collision>
       <origin
-        xyz="0 0 0"
+        xyz="0.0001 0 -0.0097"
         rpy="0 0 0" />
       <geometry>
-        <mesh
-          filename="package://learnbot/meshes/base_link.STL" />
+        <box size="0.2086 0.1681 0.0794" />
       </geometry>
     </collision>
   </link>
@@ -250,8 +249,7 @@
         xyz="0 0 0"
         rpy="0 0 0" />
       <geometry>
-        <mesh
-          filename="package://learnbot/meshes/caster_wheel_link.STL" />
+        <sphere radius="0.016" />
       </geometry>
     </collision>
   </link>
@@ -354,10 +352,9 @@
     <collision>
       <origin
         xyz="0 0 0"
-        rpy="0 0 0" />
+        rpy="1.5707963267948966 0 0" />
       <geometry>
-        <mesh
-          filename="package://learnbot/meshes/right_wheel_link.STL" />
+        <cylinder radius="0.033" length="0.032" />
       </geometry>
     </collision>
   </link>
@@ -466,10 +463,9 @@
     <collision>
       <origin
         xyz="0 0 0"
-        rpy="0 0 0" />
+        rpy="1.5707963267948966 0 0" />
       <geometry>
-        <mesh
-          filename="package://learnbot/meshes/left_wheel_link.STL" />
+        <cylinder radius="0.033" length="0.032" />
       </geometry>
     </collision>
   </link>
