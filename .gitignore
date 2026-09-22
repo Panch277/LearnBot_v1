@@ -4,7 +4,3 @@ log/
 *.pyc
 __pycache__/
 .vscode/
-
-# Third-party ros2_control hardware driver -- cloned separately per README,
-# not vendored into this repo (see joshnewans/diffdrive_arduino, humble branch)
-src/diffdrive_arduino/
