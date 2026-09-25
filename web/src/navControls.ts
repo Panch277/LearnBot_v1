@@ -35,18 +35,24 @@ const goalPoseTopic = new ROSLIB.Topic({
   messageType: 'geometry_msgs/msg/PoseStamped',
 });
 
-// Both take just a map-frame (x, y) -- click-to-set-heading (drag after the
-// click, like RViz/Foxglove's arrow) isn't implemented yet, so orientation
-// is left at identity. AMCL converges heading from subsequent motion either
-// way; a goal's final heading just won't be aimed on the first pass.
-export function publishInitialPose(x: number, y: number): void {
+// Both take a map-frame (x, y) plus a yaw (radians, counter-clockwise from
+// +X) -- the drag direction after the initial click, mirroring RViz/
+// Foxglove's "2D Pose Estimate" arrow. yaw defaults to 0 (identity
+// orientation) for callers that only care about position: AMCL converges
+// heading from subsequent motion either way, so a plain click without a
+// drag still works, it just leaves the arrow pointing along +X.
+function yawToQuaternion(yaw: number): { x: number; y: number; z: number; w: number } {
+  return { x: 0, y: 0, z: Math.sin(yaw / 2), w: Math.cos(yaw / 2) };
+}
+
+export function publishInitialPose(x: number, y: number, yaw = 0): void {
   initialPoseTopic.publish(
     new ROSLIB.Message({
       header: { frame_id: 'map' },
       pose: {
         pose: {
           position: { x, y, z: 0 },
-          orientation: { x: 0, y: 0, z: 0, w: 1 },
+          orientation: yawToQuaternion(yaw),
         },
         covariance: DEFAULT_INITIAL_POSE_COVARIANCE,
       },
@@ -54,13 +60,13 @@ export function publishInitialPose(x: number, y: number): void {
   );
 }
 
-export function publishGoalPose(x: number, y: number): void {
+export function publishGoalPose(x: number, y: number, yaw = 0): void {
   goalPoseTopic.publish(
     new ROSLIB.Message({
       header: { frame_id: 'map' },
       pose: {
         position: { x, y, z: 0 },
-        orientation: { x: 0, y: 0, z: 0, w: 1 },
+        orientation: yawToQuaternion(yaw),
       },
     }),
   );

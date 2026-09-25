@@ -40,6 +40,7 @@ export class RobotViewer {
 
   private robot: URDFRobot | undefined;
   private lidarPoints: THREE.Points | undefined;
+  private poseArrow: THREE.ArrowHelper | undefined;
 
   constructor(container: HTMLElement) {
     this.renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -322,6 +323,36 @@ export class RobotViewer {
 
   get domElement(): HTMLCanvasElement {
     return this.renderer.domElement;
+  }
+
+  // Live preview of the heading being dragged out for /initialpose or
+  // /goal_pose, in the same map-frame (x, y) coordinates pickMapPoint
+  // returns -- rosGroup is the map frame, so these need no extra
+  // conversion, same as mapMesh's position above. Reused across a single
+  // drag (position/direction/length updated in place) rather than
+  // recreated per mousemove.
+  showPoseArrow(from: { x: number; y: number }, to: { x: number; y: number }): void {
+    const dir = new THREE.Vector3(to.x - from.x, to.y - from.y, 0);
+    const length = dir.length();
+    if (length < 1e-6) dir.set(1, 0, 0);
+    else dir.normalize();
+
+    if (!this.poseArrow) {
+      this.poseArrow = new THREE.ArrowHelper(dir, new THREE.Vector3(from.x, from.y, 0), 0.05, 0x33c1ff, 0.06, 0.04);
+      this.rosGroup.add(this.poseArrow);
+    } else {
+      this.poseArrow.position.set(from.x, from.y, 0);
+      this.poseArrow.setDirection(dir);
+    }
+    this.poseArrow.setLength(Math.max(length, 0.05), 0.06, 0.04);
+  }
+
+  hidePoseArrow(): void {
+    if (!this.poseArrow) return;
+    this.rosGroup.remove(this.poseArrow);
+    (this.poseArrow.line.material as THREE.Material).dispose();
+    (this.poseArrow.cone.material as THREE.Material).dispose();
+    this.poseArrow = undefined;
   }
 
   // Default left-drag is orbit-rotate. "move" swaps it to pan instead
