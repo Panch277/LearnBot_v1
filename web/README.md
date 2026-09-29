@@ -17,31 +17,20 @@ ros2 launch learnbot launch_robot.launch.py
 
 **2. On the desktop** — the bridge (camera + rosbridge websocket):
 ```bash
-ros2 launch /home/panchpc/LearnBot_v0/web/ros/rosbridge.launch.py
+ros2 launch /home/panchpc/LearnBot_v1/web/ros/rosbridge.launch.py
 ```
 
 **3. On the desktop** — the dashboard dev server:
 ```bash
-cd /home/panchpc/LearnBot_v0/web
+cd /home/panchpc/LearnBot_v1/web
 npm run dev
 ```
 Open the printed `http://localhost:5173` (or `http://192.168.1.67:5173` from another
 device on the LAN, e.g. your phone).
 
-That's enough for camera + 3D view + lidar + teleop. For the map/navigation panel,
-also do:
-
-**4. (Optional) Nav2 — localization + navigation**, on the desktop:
-```bash
-ros2 launch learnbot localization_launch.py use_sim_time:=false \
-  map:=/home/panchpc/LearnBot_v0/src/learnbot/maps/<your_map>.yaml
-
-ros2 launch learnbot navigation_launch.py use_sim_time:=false \
-  map_subscribe_transient_local:=true
-```
-
-That second argument matters — see "Known quirks" below for why leaving it off
-silently breaks the costmaps.
+That's enough for camera + 3D view + lidar + teleop. SLAM and Nav2 no longer
+need separate terminal commands — see "SLAM / Nav2 panel" below, both are
+buttons in the dashboard itself now.
 
 ## Using the dashboard
 
@@ -54,6 +43,36 @@ silently breaks the costmaps.
     once per Nav2 session (see below).
   - **🏁 Send goal** — click this, then click anywhere on the map to send the
     robot there autonomously via Nav2.
+
+### SLAM / Nav2 panel
+
+Backed by `web/ros/process_manager.py`, launched automatically as part of
+step 2 above (the bridge) — see that file for how it starts/stops processes
+and enforces SLAM and Nav2 not running at the same time.
+
+- **Start SLAM / Stop SLAM** — runs/stops `slam_toolbox`
+  (`online_async_launch.py`) exactly as described in
+  [`SLAM_NAV2.md`](../src/learnbot/SLAM_NAV2.md). The map grows live in the
+  3D view above as you drive around (subscribed directly to the `/map`
+  topic — see `mapService.ts`'s `subscribeMapUpdates`).
+- **Map name + Save Map** — only enabled while SLAM is running. Calls
+  slam_toolbox's own `/slam_toolbox/save_map` service (the same one its
+  RViz panel uses) and writes `<name>.pgm` / `<name>.yaml` straight into
+  `src/learnbot/maps/`, matching the convention in `SLAM_NAV2.md`.
+- **Map dropdown + ⟳** — lists the `.yaml` files currently in
+  `src/learnbot/maps/`. Refreshes automatically right after a successful
+  save, or manually via ⟳.
+- **Start Nav2 / Stop Nav2** — runs both required launch files together
+  against whichever map is selected in the dropdown:
+  ```bash
+  ros2 launch learnbot localization_launch.py use_sim_time:=false \
+    map:=src/learnbot/maps/<selected>.yaml
+  ros2 launch learnbot navigation_launch.py use_sim_time:=false \
+    map_subscribe_transient_local:=true
+  ```
+  That second argument is always included — see "Known quirks" below for why
+  leaving it off silently breaks the costmaps. Stopping cleanly shuts down
+  both.
 
 ### Setting the initial pose (step by step)
 

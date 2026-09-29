@@ -3,9 +3,12 @@ import { initTeleop } from './teleop';
 import { RobotViewer } from './robotViewer';
 import { subscribeRobotState } from './jointStateSubscriber';
 import { subscribeLidar } from './lidarSubscriber';
-import { fetchMap } from './mapService';
+import { fetchMap, subscribeMapUpdates } from './mapService';
 import { subscribeMapFrame } from './mapFrameSubscriber';
 import { publishInitialPose, publishGoalPose } from './navControls';
+import { initProcessControls } from './processControls';
+import { initMapSave } from './mapSave';
+import { initNav2Controls } from './nav2Controls';
 
 // web_video_server wants the *base* raw image topic (sensor_msgs/msg/Image) --
 // it does its own re-encoding to MJPEG internally. Pointing it at the
@@ -58,6 +61,7 @@ function initRobotViewer(): void {
       subscribeLidar(viewer);
       subscribeMapFrame(viewer);
       fetchMap(viewer);
+      subscribeMapUpdates(viewer);
     })
     .catch((err) => console.error('Failed to load robot URDF', err));
 
@@ -118,3 +122,6 @@ initConnectionBadge();
 initCameraFeed();
 initTeleop();
 initRobotViewer();
+initProcessControls();
+initMapSave();
+initNav2Controls();

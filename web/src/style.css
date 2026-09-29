@@ -79,7 +79,8 @@ body {
   grid-template-columns: 2fr 1fr;
   grid-template-areas:
     'view   camera'
-    'view   teleop';
+    'view   teleop'
+    'view   process';
   gap: 1rem;
   padding: 1.5rem;
 }
@@ -96,13 +97,18 @@ body {
   grid-area: teleop;
 }
 
+.panel--process {
+  grid-area: process;
+}
+
 @media (max-width: 720px) {
   .layout {
     grid-template-columns: 1fr;
     grid-template-areas:
       'view'
       'camera'
-      'teleop';
+      'teleop'
+      'process';
   }
 }
 
@@ -230,4 +236,84 @@ body {
   font-size: 0.75rem;
   color: var(--text-dim);
   text-align: center;
+}
+
+.toggle-btn {
+  display: block;
+  width: 100%;
+  padding: 0.65rem 1rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: #1c2733;
+  color: var(--text);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.toggle-btn.is-active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #1a0d06;
+}
+
+.toggle-btn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.map-save {
+  margin-top: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.text-input {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text);
+  font-size: 0.9rem;
+}
+
+.text-input::placeholder {
+  color: var(--text-dim);
+}
+
+.hint--ok {
+  color: var(--ok);
+}
+
+.hint--err {
+  color: var(--err);
+}
+
+.panel-divider {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 1rem 0;
+}
+
+.map-select-row {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.map-select-row .text-input {
+  flex: 1;
+}
+
+.icon-btn {
+  width: 2.5rem;
+  flex-shrink: 0;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: #1c2733;
+  color: var(--text);
+  font-size: 1rem;
+  cursor: pointer;
 }

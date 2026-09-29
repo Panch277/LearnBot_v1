@@ -3,7 +3,7 @@ import os
 from ament_index_python.packages import get_package_share_directory
 
 from launch import LaunchDescription
-from launch.actions import IncludeLaunchDescription, DeclareLaunchArgument
+from launch.actions import ExecuteProcess, IncludeLaunchDescription, DeclareLaunchArgument
 from launch.launch_description_sources import AnyLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration
 
@@ -52,8 +52,20 @@ def generate_launch_description():
         }]
     )
 
+    # Lets the web dashboard start/stop `ros2 launch` processes (SLAM, Nav2)
+    # via ROS services instead of a terminal -- see process_manager.py for
+    # the process list and start/stop/monitor logic. Not an installed
+    # package executable (same "standalone, no ament package" reasoning as
+    # this launch file itself), so it's run directly with python3 rather
+    # than through launch_ros's Node action.
+    process_manager = ExecuteProcess(
+        cmd=['python3', os.path.join(os.path.dirname(__file__), 'process_manager.py')],
+        output='screen',
+    )
+
     return LaunchDescription([
         declare_use_sim_time,
         rosbridge_websocket,
         web_video_server,
+        process_manager,
     ])

@@ -45,6 +45,28 @@
         </div>
         <p class="hint">Arrow keys / WASD also work.</p>
       </section>
+
+      <section class="panel panel--process">
+        <h2>SLAM / Nav2</h2>
+        <button data-process-toggle="slam" class="toggle-btn">Start SLAM</button>
+        <p data-process-status="slam" class="hint"></p>
+        <div class="map-save">
+          <input id="map-save-name" type="text" class="text-input" placeholder="map name, e.g. living_room" />
+          <button id="map-save-btn" class="toggle-btn">Save Map</button>
+          <p id="map-save-status" class="hint"></p>
+        </div>
+
+        <hr class="panel-divider" />
+
+        <div class="map-select-row">
+          <select id="nav2-map-select" class="text-input" disabled>
+            <option>Loading maps…</option>
+          </select>
+          <button id="nav2-map-refresh" class="icon-btn" title="Refresh map list">⟳</button>
+        </div>
+        <button data-process-toggle="nav2" class="toggle-btn">Start Nav2</button>
+        <p data-process-status="nav2" class="hint"></p>
+      </section>
     </main>
 
     <script type="module" src="/src/main.ts"></script>
